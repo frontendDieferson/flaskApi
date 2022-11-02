@@ -1,18 +1,48 @@
 import React from 'react';
 
+async function deleteData(url = '', data = {}) {
+const response = await fetch(url, {
+    method: 'DELETE',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+})
+return response.json()
+}
+
+async function updateData(url = '', data = {}) {
+    const response = await fetch(url, {
+       method: 'PUT',
+       headers: {
+          'Content-Type': 'application/json'
+       },
+       body: JSON.stringify(data)
+    });
+    return response.json();
+ }
+
 function TodoList({ todos, updateTodos, setTodos }) {
 
-    const removeTask = (index) => {
-        const updatedList = todos.filter((task, taskIndex) => {
-            return taskIndex !== index;
-        });
+    const removeTask =  async (index, todo) => {
+        await deleteData('http://localhost:5000/todo/delete', todo)
+        .then(data => {
+            const updatedList = todos.filter((task, taskIndex) => {
+                return taskIndex !== index;
+        })
         updateTodos(updatedList);
+        });
     }
 
-    const markComplete = (id) => {
-        return todos.map((item, index) => {
-            if (id !== index) return item;
-            return { ...item, complete: !(item.complete) };
+    const markComplete = async (id, index, todo) => {
+        const updated = { ...todo, complete: !todo.complete  }
+        await updateData('http://localhost:5000/todo/update', updated)
+        .then(data => {
+            const updatedList =  todos.map((item, index) => {
+                if (index !== id) return item;
+                return updated;
+        })
+        updateTodos(updatedList)
         });
     }
     return (
@@ -25,7 +55,7 @@ function TodoList({ todos, updateTodos, setTodos }) {
                         onClick={() => setTodos(markComplete(index))}>
                         Item {index + 1}: {todo.task}
                     </div>
-                    <div><button className="button" onClick={() => removeTask(index)}>Delete</button>  </div>
+                    <div><button className="button" onClick={() => removeTask(index, todo)}>Delete</button>  </div>
 
                 </div>
 
