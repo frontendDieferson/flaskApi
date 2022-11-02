@@ -3,14 +3,14 @@ import React, { useState } from 'react';
 
 async function postData(url = '', data = {}) {
     const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    return response.json()
-}
+       method: 'POST',
+       headers: {
+          'Content-Type': 'application/json'
+       },
+       body: JSON.stringify(data)
+    });
+    return response.json();
+ }
 
 
 function TodoForm({ addTodo }) {
@@ -23,7 +23,7 @@ function TodoForm({ addTodo }) {
         await postData('http://localhost:5000/todo/create',
         { complete: false, task: userInput})
         .then(data => {
-            addTodo({ complete: false, task: userInput, });
+            addTodo(data);
             setUserInput("");
         })
     };
